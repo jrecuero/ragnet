@@ -1,6 +1,7 @@
 from collections import OrderedDict
 import random
-from base import Base, Stat, Damager, Defenser
+from base import Base, Stat, Defenser
+from damagers import Damager, new_scan
 
 
 class Unit(Base):
@@ -16,7 +17,8 @@ class Unit(Base):
         self.xp_for_kill: int = 0
         self.platoon: str = None
         self.klass: str = None
-        self._targets = []
+        self._targets = OrderedDict()
+        self._scan = None
 
     def __str__(self):
         return "[{:2}] | {:8} ({:2}|{:3}) | {:8} | {:8} | {:3} | {} | {} -> t:{:8}".format(
@@ -29,13 +31,12 @@ class Unit(Base):
             self.life.raw,
             self.damager,
             self.defenser,
-            self._targets[-1].name if len(self._targets) else "None",
+            list(self._targets.keys())[-1].name if len(self._targets) else "None",
         )
 
     @property
     def targets(self):
-        t = OrderedDict.fromkeys(self._targets)
-        return list(t.keys())
+        return list(self._targets.keys())
 
     def is_alive(self):
         return self.life.raw > 0
@@ -50,11 +51,14 @@ class Unit(Base):
             self.level += 1
 
     def damage_to(self, target):
-        self._targets.append(target)
-        # pdmg = self.pdmg.raw - target.pdef.raw
-        pdmg = self.damager.damage_to(target.defenser)
-        if pdmg > 0:
-            target.life.raw -= pdmg
+        if target in self._targets:
+            dmg = self.damager.damage_to(target.defenser)
+            if dmg["damage"] > 0:
+                target.life.raw -= dmg["damage"]
+        else:
+            dmg = self._scan.damage_to(target.defenser)
+        dmg.update({"klass": target.klass, "target": target.name})
+        self._targets.setdefault(target, []).append(dmg)
         if not target.is_alive():
             self.xp += target.xp_for_kill
         self.level_up()
@@ -70,4 +74,5 @@ def new_unit(name, life, damager, defenser, platoon, klass, xp=10) -> Unit:
     unit.platoon = platoon
     unit.klass = klass
     unit.xp_for_kill = xp
+    unit._scan = new_scan(damager.raw)
     return unit
