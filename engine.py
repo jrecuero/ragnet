@@ -20,11 +20,18 @@ class Engine:
     def turn(self):
         self.tick += 1
         for unit in self.units:
-            if not unit.is_alive():
-                continue
-            target = self.select_target(unit)
+            # if not unit.is_alive():
+            #     continue
+            if not unit.engaged or not unit.engaged.is_alive():
+                unit.engaged = None
+                target = self.select_target(unit)
+            else:
+                target = unit.engaged
             if target is None:
                 continue
+            if not unit.engaged and not target.engaged:
+                unit.engaged = target
+                target.engaged = unit
             unit.damage_to(target)
         self.units = [x for x in self.units if x.is_alive()]
 
@@ -51,7 +58,20 @@ class Engine:
         import pandas
 
         df = pandas.DataFrame(pds)
-        df = df[["klass", "target", "damager", "damage", "slash", "blunt", "pierce"]]
+        df = df[
+            [
+                "klass",
+                "target",
+                "damager",
+                "damage",
+                "acc",
+                "to-hit",
+                "hit",
+                "slash",
+                "blunt",
+                "pierce",
+            ]
+        ]
         print(df)
 
 
@@ -60,16 +80,16 @@ def main():
     from unit import new_unit
 
     def generate_player():
-        damage = random.randint(10, 20)
         return new_unit(
             "player",
             random.randint(100, 200),
-            [new_slasher(damage), new_blunter(damage), new_piercer(damage)],
-            # [
-            #     new_damager(
-            #         "weapon", random.randint(10, 20), slash=50, blunt=50, pierce=50
-            #     )
-            # ],
+            10,
+            10,
+            [
+                new_slasher(random.randint(15, 20)),
+                new_blunter(random.randint(30, 50)),
+                new_piercer(random.randint(5, 10)),
+            ],
             new_defenser(
                 random.randint(5, 10),
                 slash=random.randint(1, 50),
@@ -87,10 +107,13 @@ def main():
             u = new_unit(
                 "demon{}".format(x),
                 life,
+                5,
+                5,
                 [
                     new_damager(
                         "weapon",
                         random.randint(1, 10),
+                        75,
                         slash=random.randint(25, 50),
                         blunt=random.randint(1, 25),
                         pierce=random.randint(25, 50),
@@ -111,10 +134,13 @@ def main():
             u = new_unit(
                 "fish{}".format(x),
                 life,
+                5,
+                5,
                 [
                     new_damager(
                         "weapon",
                         random.randint(1, 10),
+                        75,
                         slash=random.randint(1, 25),
                         blunt=random.randint(25, 50),
                         pierce=random.randint(25, 50),
@@ -135,10 +161,13 @@ def main():
             u = new_unit(
                 "bird{}".format(x),
                 life,
+                5,
+                5,
                 [
                     new_damager(
                         "weapon",
                         random.randint(1, 10),
+                        75,
                         slash=random.randint(25, 50),
                         blunt=random.randint(25, 50),
                         pierce=random.randint(1, 10),
