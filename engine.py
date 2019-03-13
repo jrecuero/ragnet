@@ -1,7 +1,7 @@
 import random
 from collections import Counter
 from base import new_defenser
-from damagers import new_damager
+from damagers import new_damager, new_slasher, new_blunter, new_piercer
 
 
 class Engine:
@@ -60,19 +60,16 @@ def main():
     from unit import new_unit
 
     def generate_player():
+        damage = random.randint(10, 20)
         return new_unit(
             "player",
             random.randint(100, 200),
-            new_damager(
-                "weapon",
-                random.randint(10, 20),
-                # slash=random.randint(25, 50),
-                # blunt=random.randint(25, 50),
-                # pierce=random.randint(25, 50),
-                slash=50,
-                blunt=50,
-                pierce=50,
-            ),
+            [new_slasher(damage), new_blunter(damage), new_piercer(damage)],
+            # [
+            #     new_damager(
+            #         "weapon", random.randint(10, 20), slash=50, blunt=50, pierce=50
+            #     )
+            # ],
             new_defenser(
                 random.randint(5, 10),
                 slash=random.randint(1, 50),
@@ -90,22 +87,16 @@ def main():
             u = new_unit(
                 "demon{}".format(x),
                 life,
-                new_damager(
-                    "weapon",
-                    random.randint(1, 10),
-                    slash=random.randint(25, 50),
-                    blunt=random.randint(1, 25),
-                    pierce=random.randint(25, 50),
-                ),
-                new_defenser(
-                    random.randint(1, 5),
-                    # slash=random.randint(1, 50),
-                    # blunt=random.randint(1, 10),
-                    # pierce=random.randint(1, 50),
-                    slash=100,
-                    blunt=0,
-                    pierce=100,
-                ),
+                [
+                    new_damager(
+                        "weapon",
+                        random.randint(1, 10),
+                        slash=random.randint(25, 50),
+                        blunt=random.randint(1, 25),
+                        pierce=random.randint(25, 50),
+                    )
+                ],
+                new_defenser(random.randint(1, 10), slash=100, blunt=0, pierce=100),
                 "red",
                 "demon",
                 life + 10,
@@ -120,22 +111,16 @@ def main():
             u = new_unit(
                 "fish{}".format(x),
                 life,
-                new_damager(
-                    "weapon",
-                    random.randint(1, 10),
-                    slash=random.randint(1, 25),
-                    blunt=random.randint(25, 50),
-                    pierce=random.randint(25, 50),
-                ),
-                new_defenser(
-                    random.randint(1, 5),
-                    # slash=random.randint(1, 10),
-                    # blunt=random.randint(1, 50),
-                    # pierce=random.randint(1, 50),
-                    slash=0,
-                    blunt=100,
-                    pierce=100,
-                ),
+                [
+                    new_damager(
+                        "weapon",
+                        random.randint(1, 10),
+                        slash=random.randint(1, 25),
+                        blunt=random.randint(25, 50),
+                        pierce=random.randint(25, 50),
+                    )
+                ],
+                new_defenser(random.randint(1, 10), slash=0, blunt=100, pierce=100),
                 "green",
                 "fish",
                 life + 10,
@@ -150,22 +135,16 @@ def main():
             u = new_unit(
                 "bird{}".format(x),
                 life,
-                new_damager(
-                    "weapon",
-                    random.randint(1, 10),
-                    slash=random.randint(25, 50),
-                    blunt=random.randint(25, 50),
-                    pierce=random.randint(1, 10),
-                ),
-                new_defenser(
-                    random.randint(1, 5),
-                    # slash=random.randint(1, 50),
-                    # blunt=random.randint(1, 50),
-                    # pierce=random.randint(0, 0),
-                    slash=100,
-                    blunt=100,
-                    pierce=0,
-                ),
+                [
+                    new_damager(
+                        "weapon",
+                        random.randint(1, 10),
+                        slash=random.randint(25, 50),
+                        blunt=random.randint(25, 50),
+                        pierce=random.randint(1, 10),
+                    )
+                ],
+                new_defenser(random.randint(1, 10), slash=100, blunt=100, pierce=0),
                 "yellow",
                 "bird",
                 life + 10,

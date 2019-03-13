@@ -15,6 +15,9 @@ class Damager:
         blunt = self.raw * self.blunt / 100.0 - target.raw * target.blunt / 100.0
         pierce = self.raw * self.pierce / 100.0 - target.raw * target.pierce / 100.0
         slash = self.raw * self.slash / 100.0 - target.raw * target.slash / 100.0
+        blunt = blunt if blunt > 0 else 0
+        pierce = pierce if pierce > 0 else 0
+        slash = slash if slash > 0 else 0
         return {
             "damager": self.name,
             "damage": int(blunt + pierce + slash),
@@ -35,3 +38,15 @@ def new_damager(name, raw, blunt=0.0, pierce=0.0, slash=0.0):
 
 def new_scan(raw=100):
     return new_damager("scan", raw, 100.0, 100.0, 100.0)
+
+
+def new_slasher(raw):
+    return new_damager("slasher", raw, slash=100.0)
+
+
+def new_blunter(raw):
+    return new_damager("blunter", raw, blunt=100.0)
+
+
+def new_piercer(raw):
+    return new_damager("piercer", raw, pierce=100.0)
