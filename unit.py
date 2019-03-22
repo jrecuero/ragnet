@@ -1,3 +1,4 @@
+from typing import List
 from collections import OrderedDict
 import random
 from base import Base, Stat, Defenser

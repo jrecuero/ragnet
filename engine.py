@@ -1,15 +1,17 @@
+from typing import List
 import random
 from collections import Counter
 from base import new_defenser
 from damagers import new_damager, new_slasher, new_blunter, new_piercer
+from unit import Unit
 
 
 class Engine:
     def __init__(self):
-        self.units = []
+        self.units: List[Unit] = []
         self.tick: int = 0
 
-    def select_target(self, unit):
+    def select_target(self, unit: Unit):
         platoon = unit.platoon
         targets = [x for x in self.units if x.is_alive() and x.platoon != platoon]
         return random.choice(targets) if targets else None
